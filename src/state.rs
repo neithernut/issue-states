@@ -115,6 +115,18 @@ impl<C> IssueState<C>
             .map(|state| (state, StateRelation::Overrides));
         self.relations.extend(entries)
     }
+
+    /// Check whether all conditions of the state are satisfied for an issue
+    ///
+    /// # Note:
+    ///
+    /// Conditions inherited from states extended by this state are not
+    /// considered. Thus, this function alone can not be used for assessing
+    /// whether the state is enabled or not.
+    ///
+    pub fn conditions_satisfied(&self, issue: &C::Issue) -> bool {
+        self.conditions.iter().all(|c| c.satisfied_by(issue))
+    }
 }
 
 
