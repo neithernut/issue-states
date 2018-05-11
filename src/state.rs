@@ -64,7 +64,7 @@ pub trait Condition {
 /// Representaiton of an issue state
 ///
 pub struct IssueState<C>
-    where C: Sized
+    where C: Condition + Sized
 {
     /// The name of the state
     name: String,
@@ -76,7 +76,7 @@ pub struct IssueState<C>
 
 
 impl<C> IssueState<C>
-    where C: Sized
+    where C: Condition + Sized
 {
     /// Create an issue state with a given name
     ///
@@ -118,24 +118,32 @@ impl<C> IssueState<C>
 }
 
 
-impl<C> PartialEq for IssueState<C> {
+impl<C> PartialEq for IssueState<C>
+    where C: Condition
+{
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name
     }
 }
 
 
-impl<C> Eq for IssueState<C> {}
+impl<C> Eq for IssueState<C>
+    where C: Condition
+{}
 
 
-impl<C> PartialOrd for IssueState<C> {
+impl<C> PartialOrd for IssueState<C>
+    where C: Condition
+{
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(&other))
     }
 }
 
 
-impl<C> Ord for IssueState<C> {
+impl<C> Ord for IssueState<C>
+    where C: Condition
+{
     fn cmp(&self, other: &Self) -> Ordering {
         self.name.cmp(&other.name)
     }
