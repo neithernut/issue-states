@@ -1,0 +1,122 @@
+// Issue states
+//
+// Copyright (c) 2018 Julian Ganz
+//
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
+
+use std::collections::BTreeMap;
+use std::cmp::Ordering;
+use std::sync::Arc;
+
+
+
+
+/// Enumeration type for classificatoin of relations
+///
+pub enum StateRelation {
+    Extends,
+    Overrides
+}
+
+
+
+
+/// Representaiton of an issue state
+///
+pub struct IssueState<C>
+    where C: Sized
+{
+    /// The name of the state
+    name: String,
+    /// Metadata conditions of the state
+    pub conditions: Vec<C>,
+    /// Relations to ther states
+    pub relations: BTreeMap<Arc<IssueState<C>>, StateRelation>,
+}
+
+
+impl<C> IssueState<C>
+    where C: Sized
+{
+    /// Create an issue state with a given name
+    ///
+    pub fn new(name: String) -> Self {
+        Self {
+            name: name,
+            conditions: Vec::new(),
+            relations: BTreeMap::new(),
+        }
+    }
+
+    /// Retrieve the name of the issue state
+    ///
+    pub fn name(&self) -> &String {
+        &self.name
+    }
+
+    /// Add states on which this state depends on
+    ///
+    pub fn add_extended<I>(&mut self, dependencies: I)
+        where I: IntoIterator<Item = Arc<IssueState<C>>>
+    {
+        let entries = dependencies
+            .into_iter()
+            .map(|state| (state, StateRelation::Extends));
+        self.relations.extend(entries)
+    }
+
+    /// Add states which will override this state
+    ///
+    pub fn add_overridden<I>(&mut self, overridden_by: I)
+        where I: IntoIterator<Item = Arc<IssueState<C>>>
+    {
+        let entries = overridden_by
+            .into_iter()
+            .map(|state| (state, StateRelation::Overrides));
+        self.relations.extend(entries)
+    }
+}
+
+
+impl<C> PartialEq for IssueState<C> {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+    }
+}
+
+
+impl<C> Eq for IssueState<C> {}
+
+
+impl<C> PartialOrd for IssueState<C> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(&other))
+    }
+}
+
+
+impl<C> Ord for IssueState<C> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.name.cmp(&other.name)
+    }
+}
+
