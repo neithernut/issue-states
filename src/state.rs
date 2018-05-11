@@ -40,6 +40,27 @@ pub enum StateRelation {
 
 
 
+/// Trait for issue metadata conditions
+///
+/// Whatever is used as type for conditions on metadata has to implement this
+/// trait. It enables `IssueStates` to evaluate the condition.
+///
+pub trait Condition {
+    /// Type of the issue being evaluated
+    ///
+    /// Alternatively, some representation of the metadata may be used in place
+    /// of the issue type.
+    ///
+    type Issue;
+
+    /// Check whether the condition is satisfied by the issue provided
+    ///
+    fn satisfied_by(&self, issue: &Self::Issue) -> bool;
+}
+
+
+
+
 /// Representaiton of an issue state
 ///
 pub struct IssueState<C>
