@@ -3,7 +3,7 @@
 An issue state specification consist of a list or sequence of descriptions of
 issue state. Each issue state is identified by a unique, mandatory name.
 It may contain one name for a counter-state as well as a specification for
-the metadata conditions, issue state dependents and overridden issue states.
+the metadata conditions, dependet-on issue states and overridden issue states.
 
 
 ## YAML 1.2
@@ -36,7 +36,7 @@ state's properties. Each of those properties is optional:
    all the sub-conditions expressed through the individual strings.
  * An entry with the key `depends-on` denotes other states the current state
    depends on. The value of this entry is a list of strings, each representing
-   a dependent's name. Alternatively, if the state depends only on a single
+   an issue-state's name. Alternatively, if the state depends only on a single
    other state, a single string may be used.
  * An entry with the key `overrides` denotes states which are overridden by the
    current state. Like for the `depends-on` entry, its value is a list of state
