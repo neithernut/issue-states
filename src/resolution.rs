@@ -23,9 +23,21 @@
 // SOFTWARE.
 //
 
-pub mod error;
-pub mod resolution;
-pub mod state;
+use std::sync::Arc;
 
-mod iter;
+use error::Result;
+use state;
+
+
+
+
+/// Trait providing operation for resolving issue states
+///
+pub trait Resolvable<C>
+    where C: state::Condition
+{
+    /// Resolve states for a given issue
+    ///
+    fn issue_state(&self, issue: &C::Issue) -> Result<Option<Arc<state::IssueState<C>>>>;
+}
 
