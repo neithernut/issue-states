@@ -12,9 +12,8 @@ function mapping an issue's metadata to a truth value. A state is said to be
 "enabled" for a given issue if this function yields "true" for the issue's
 metadata, e.g. if the condition is satisfied.
 
-Contrary to what is common for issue- and bugtrackers, multiple states may be
-engaged for an issue, e.g. if the metadata satisfies the specifications of
-multiple issue states. Also contrary to common workflow concepts, state
+An issue exhibits at most one state at a given time. This state has to be one of
+the enabled states for the issue. Contrary to common workflow concepts, state
 transitions are not modeled --hence the name "issue-states" rather than
 something containing "workflow". Thus, no restrictions or actions can be
 associated with an transition. If a user can arbitrarily alter issue metadata,
