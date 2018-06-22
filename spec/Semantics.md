@@ -36,6 +36,8 @@ inheritance of extended states is transitive with regard to the relation
 "extends". Thus, the relation "depends on" is also both anti-symmetric and
 transitive.
 
+The relation given by the union of the relations "overrides" and "extends" shall
+also be anti-symmetric and transitive.
 
 ## Names
 
