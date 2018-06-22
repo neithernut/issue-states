@@ -26,9 +26,7 @@ An issue state may "override" one or more other issue states if specified:
 if the state is enabled, the issue cannot exhibit any of the states overridden.
 For example, if two states are enabled for an issue but one overrides the other,
 the overriding state is selected as the issue's state. The relation "overrides"
-is both anti-symmetric and transitive. Since an issue state should naturally
-never override itself, the graph given by issue states and the relation should
-be free of cycles.
+is both anti-symmetric and transitive.
 
 An issue state may also "depend" on one or more other issue states, e.g. the
 state is only engaged if all issue states it depends on are engaged. Like the
