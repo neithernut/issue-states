@@ -28,11 +28,13 @@ For example, if two states are enabled for an issue but one overrides the other,
 the overriding state is selected as the issue's state. The relation "overrides"
 is both anti-symmetric and transitive.
 
-An issue state may also "depend" on one or more other issue states, e.g. the
-state is only engaged if all issue states it depends on are engaged. Like the
-relation "overrides", the relation "depends on" is both anti-symmetric and
-transitive. Also, the corresponding graph should be free of cycles. An issue
-cannot depends on an issue and override the same issue at the same time.
+An issue state may "extend" on one or more other issue states. This relation
+has the same effect as the "override" relation. However, the extending state
+inherits the conditions of the extended states, e.g. the state is only enabled
+if its own condition is satisfied and all states it extends are enabled. The
+inheritance of extended states is transitive with regard to the relation
+"extends". Thus, the relation "depends on" is also both anti-symmetric and
+transitive.
 
 
 ## Names
