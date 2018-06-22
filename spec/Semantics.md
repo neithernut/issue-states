@@ -39,13 +39,6 @@ transitive.
 The relation given by the union of the relations "overrides" and "extends" shall
 also be anti-symmetric and transitive.
 
-## Names
-
-States have a name, which is part of the state's specification. A state's
-specification may also contain the name of a "counter-state". This introduces a
-pseudo state which is engaged if, and only if, the original state is disengaged.
-A state cannot depend or override a counter-state directly or transitively.
-
 
 ## Note on computability
 
