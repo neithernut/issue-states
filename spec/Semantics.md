@@ -4,8 +4,7 @@ The central objects of interest are the states an issue may have, henceforth
 referred to as "issue states". However, in this project, issue states are not
 a property which is actively assigned to an issue but rather a property which is
 inferred from its metadata, based on the specification. For example, an issue
-may exhibit the state "assigned" if an assignee is present for the issue. An
-issue state is either "engaged" or "disengaged".
+may exhibit the state "assigned" if an assignee is present for the issue.
 
 An issue state is associated with a "condition", which is conceptually a pure
 function mapping an issue's metadata to a truth value. A state is said to be
