@@ -7,6 +7,11 @@ inferred from its metadata, based on the specification. For example, an issue
 may exhibit the state "assigned" if an assignee is present for the issue. An
 issue state is either "engaged" or "disengaged".
 
+An issue state is associated with a "condition", which is conceptually a pure
+function mapping an issue's metadata to a truth value. A state is said to be
+"enabled" for a given issue if this function yields "true" for the issue's
+metadata, e.g. if the condition is satisfied.
+
 Contrary to what is common for issue- and bugtrackers, multiple states may be
 engaged for an issue, e.g. if the metadata satisfies the specifications of
 multiple issue states. Also contrary to common workflow concepts, state
