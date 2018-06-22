@@ -23,9 +23,9 @@ it can be assumed that he or she may put the issue in any state specified.
 ## Relations between states
 
 An issue state may "override" one or more other issue states if specified:
-if a state is "engaged" due to the issue's metadata, states overridden by
-this state are "disengaged", e.g. no longer visible to the user regardless of
-whether the metadata satisfies the state's perquisites. The relation "overrides"
+if the state is enabled, the issue cannot exhibit any of the states overridden.
+For example, if two states are enabled for an issue but one overrides the other,
+the overriding state is selected as the issue's state. The relation "overrides"
 is both anti-symmetric and transitive. Since an issue state should naturally
 never override itself, the graph given by issue states and the relation should
 be free of cycles.
