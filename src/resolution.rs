@@ -24,11 +24,48 @@
 //
 
 use std::sync::Arc;
+use std::collections;
 
-use error::Result;
+use error::*;
+use iter::LeftJoinable;
 use state;
 
 
+
+
+/// Map for tracking enabled and disabled states
+///
+type EnabledMap<C> = collections::BTreeMap<Arc<state::IssueState<C>>, bool>;
+
+
+/// Check whether the dependencies for an issue's state allow it to be enabled
+///
+/// For example, an issue state may only be enabled if all the states it extends
+/// are enabled. The computation is done purely based on a given `EnabledMap`,
+/// e.g. this function does not recurse into extended states.
+///
+/// This function may be used for implementing efficient computation of an
+/// issue's state.
+///
+fn deps_enabled<C>(state: &state::IssueState<C>, map: &EnabledMap<C>) -> Result<bool>
+    where C: state::Condition
+{
+    state
+        .relations
+        .iter()
+        .join_left(map.iter())
+        .filter_map(|item| match item.0 {
+            state::StateRelation::Extends   => Some(item.1),
+            state::StateRelation::Overrides => None,
+        })
+        .fold(Some(true), |state, val| if let (Some(s), Some(v)) = (state, val) {
+            Some(s && *v)
+        } else {
+            None
+        })
+        .ok_or_else(|| Error::from(ErrorKind::DependencyError))
+        // TODO: replace with try_fold()
+}
 
 
 /// Trait providing operation for resolving issue states
