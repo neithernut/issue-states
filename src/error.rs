@@ -23,8 +23,58 @@
 // SOFTWARE.
 //
 
-pub mod error;
-pub mod state;
+use std::fmt;
+use std::error::Error as EError;
+use std::result::Result as RResult;
 
-mod iter;
+
+
+
+pub enum ErrorKind {
+    CyclicDependency,
+    DependencyError,
+}
+
+
+
+
+pub struct Error {
+    kind: ErrorKind
+}
+
+
+impl From<ErrorKind> for Error {
+    fn from(kind: ErrorKind) -> Self {
+        Self {kind: kind}
+    }
+}
+
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.kind {
+            ErrorKind::CyclicDependency => f.write_str("dependency cycle detected"),
+            ErrorKind::DependencyError => f.write_str("dependency resolution error"),
+        }
+    }
+}
+
+
+impl fmt::Debug for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Display::fmt(self, f)
+    }
+}
+
+
+impl EError for Error {
+    fn description(&self) -> &str {
+        "Resolution failed"
+    }
+}
+
+
+
+
+pub type Result<T> = RResult<T, Error>;
 
