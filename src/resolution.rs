@@ -78,3 +78,98 @@ pub trait Resolvable<C>
     fn issue_state(&self, issue: &C::Issue) -> Result<Option<Arc<state::IssueState<C>>>>;
 }
 
+
+
+
+/// Set of issue states
+///
+/// This set of issue states is intended for the efficient computation of an
+/// issue's state.
+///
+pub struct IssueStateSet<C>
+    where C: state::Condition
+{
+    /// Container of states
+    ///
+    /// The states are kept in a linear sequence, ordered by dependency:
+    /// an iterator over the slice will yield a state only after all its
+    /// dependencies are yielded. Dependencies in this context are states
+    /// which are extended or overridden by the yielded state.
+    ///
+    data: Box<[Arc<state::IssueState<C>>]>,
+}
+
+
+impl<C> IssueStateSet<C>
+    where C: state::Condition
+{
+    /// Create an issue state set from a orderd set of issue states
+    ///
+    /// # Note:
+    ///
+    /// The set provided must be the (transitive) closure of all its elements
+    /// regarding its relations to other sets: if a state is in the set, all
+    /// states related to it must also be in the set. No explicit checking is
+    /// performed to assert this property.
+    ///
+    pub fn from_set(mut states: collections::BTreeSet<Arc<state::IssueState<C>>>) -> Result<Self> {
+        // We generate the state set by transferring states from the origin set
+        // (`states`) to the result sequence (`data`) dependencies first.
+        let mut data = Vec::default();
+        while !states.is_empty() {
+            let old_len = data.len();
+
+            // We add all states for which no dependencies are left in the
+            // origin set
+            data.extend(states
+                .iter()
+                .filter(|state| !state
+                    .relations
+                    .iter()
+                    .join_left(states.iter().map(|item| (item, ())))
+                    .any(|item| item.1.is_some())
+                )
+                .map(Clone::clone));
+
+            // Remove the states which are new in the target
+            for state in data.split_at(old_len).1 {
+                states.remove(state);
+            }
+
+            // If we did not find any state with no dependencies, there must be
+            // a dependency cycle in the remaining origin set. We do this after
+            // the removal for better reporting... eventually.
+            if data.len() == old_len {
+                return Err(Error::from(ErrorKind::CyclicDependency));
+            }
+        }
+
+        Ok(Self {data: data.into_boxed_slice()})
+    }
+}
+
+
+impl<C> Resolvable<C> for IssueStateSet<C>
+    where C: state::Condition
+{
+    fn issue_state(&self, issue: &C::Issue) -> Result<Option<Arc<state::IssueState<C>>>> {
+        let mut retval = None;
+        let mut enabled_map = EnabledMap::default();
+
+        // Since the data is nicely ordered in `data`, one liear pass over the
+        // states is sufficient for selecting one for any given issue. We simply
+        // determine the state foe each one as we go and keep the last of the
+        // enabled states.
+        for state in self.data.iter() {
+            let enabled = state.conditions_satisfied(issue)
+                && deps_enabled(&state, &enabled_map)?;
+            enabled_map.insert(state.clone(), enabled);
+            if enabled {
+                retval = Some(state);
+            }
+        }
+
+        Ok(retval.map(Clone::clone))
+    }
+}
+
