@@ -161,3 +161,27 @@ impl<C> Ord for IssueState<C>
     }
 }
 
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use test::TestState;
+
+    #[test]
+    fn smoke() {
+        let mut issue = BTreeMap::new();
+        issue.insert("foo", true);
+        issue.insert("bar", true);
+        issue.insert("baz", false);
+
+        let mut state : TestState = IssueState::new("state".to_string());
+        state.conditions = vec!["foo".into(), "bar".into()];
+        assert!(state.conditions_satisfied(&issue));
+
+        state.conditions = vec!["foo".into(), "baz".into()];
+        assert!(!state.conditions_satisfied(&issue));
+    }
+}
+
