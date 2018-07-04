@@ -23,6 +23,11 @@
 // SOFTWARE.
 //
 
+//! # Issue states
+//!
+//! This library serves as a reference implementation for issue states.
+//!
+
 pub mod error;
 pub mod resolution;
 pub mod state;
