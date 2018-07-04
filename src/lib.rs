@@ -32,3 +32,9 @@ mod iter;
 #[cfg(test)]
 mod test;
 
+// convenience exports
+pub use error::Result;
+pub use resolution::IssueStateSet;
+pub use state::Condition;
+pub use state::IssueState;
+
