@@ -23,12 +23,29 @@
 // SOFTWARE.
 //
 
-pub mod error;
-pub mod resolution;
-pub mod state;
+use std::collections::BTreeMap;
 
-mod iter;
+use state;
 
-#[cfg(test)]
-mod test;
+
+pub struct TestCond<'a> {
+    name: &'a str,
+}
+
+impl<'a> From<&'a str> for TestCond<'a> {
+    fn from(s: &'a str) -> Self {
+        Self {name: s}
+    }
+}
+
+impl<'a> state::Condition for TestCond<'a> {
+    type Issue = BTreeMap<&'a str, bool>;
+
+    fn satisfied_by(&self, issue: &Self::Issue) -> bool {
+        issue.get(self.name).cloned().unwrap_or(false)
+    }
+}
+
+
+pub type TestState<'a> = state::IssueState<TestCond<'a>>;
 
