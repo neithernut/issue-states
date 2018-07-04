@@ -173,3 +173,97 @@ impl<C> Resolvable<C> for IssueStateSet<C>
     }
 }
 
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use test::TestState;
+
+    #[test]
+    fn smoke() {
+        let state1 : Arc<TestState> = state::IssueState::new("new".to_string()).into();
+
+        let state2 : Arc<TestState> = {
+            let mut tmp = state::IssueState::new("acknowledged".to_string());
+            tmp.conditions = vec!["acked".into()];
+            tmp.add_overridden([state1.clone()].into_iter().map(Clone::clone));
+            tmp
+        }.into();
+
+        let state3 : Arc<TestState> = {
+            let mut tmp = state::IssueState::new("assigned".to_string());
+            tmp.conditions = vec!["assigned".into()];
+            tmp.add_extended([state2.clone()].into_iter().map(Clone::clone));
+            tmp
+        }.into();
+
+        let state4 : Arc<TestState> = {
+            let mut tmp = state::IssueState::new("closed".to_string());
+            tmp.conditions = vec!["closed".into()];
+            tmp.add_overridden([state3.clone()].into_iter().map(Clone::clone));
+            tmp
+        }.into();
+
+        let states = IssueStateSet::from_set({
+            let mut set = collections::BTreeSet::new();
+            set.insert(state1);
+            set.insert(state2);
+            set.insert(state3);
+            set.insert(state4);
+            set
+        }).expect("Failed to create issue state set.");
+
+        {
+            let state = states
+                .issue_state(&collections::BTreeMap::new())
+                .expect("Failed to determine state.")
+                .expect("Wrongly determined no state.");
+            assert_eq!(state.name(), "new");
+        }
+
+        {
+            let mut issue = collections::BTreeMap::new();
+            issue.insert("acked", true);
+            let state = states
+                .issue_state(&issue)
+                .expect("Failed to determine state.")
+                .expect("Wrongly determined no state.");
+            assert_eq!(state.name(), "acknowledged");
+        }
+
+        {
+            let mut issue = collections::BTreeMap::new();
+            issue.insert("assigned", true);
+            let state = states
+                .issue_state(&issue)
+                .expect("Failed to determine state.")
+                .expect("Wrongly determined no state.");
+            assert_eq!(state.name(), "new");
+        }
+
+        {
+            let mut issue = collections::BTreeMap::new();
+            issue.insert("acked", true);
+            issue.insert("assigned", true);
+            let state = states
+                .issue_state(&issue)
+                .expect("Failed to determine state.")
+                .expect("Wrongly determined no state.");
+            assert_eq!(state.name(), "assigned");
+        }
+
+        {
+            let mut issue = collections::BTreeMap::new();
+            issue.insert("acked", true);
+            issue.insert("closed", true);
+            let state = states
+                .issue_state(&issue)
+                .expect("Failed to determine state.")
+                .expect("Wrongly determined no state.");
+            assert_eq!(state.name(), "closed");
+        }
+    }
+}
+
