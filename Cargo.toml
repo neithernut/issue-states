@@ -1,0 +1,11 @@
+[package]
+name = "issue-states"
+version = "0.1.0"
+description = "A library for managing issue states"
+authors = ["Julian Ganz <neither@nut.email>"]
+
+repository    = "https://github.com/neithernut/issue-states"
+readme        = "README.md"
+license       = "MIT"
+
+[dependencies]
