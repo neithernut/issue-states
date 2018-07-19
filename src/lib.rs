@@ -37,6 +37,9 @@ pub mod state;
 
 mod iter;
 
+#[cfg(feature = "yaml-rust")]
+pub mod yaml;
+
 #[cfg(test)]
 mod test;
 
