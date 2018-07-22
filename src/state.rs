@@ -164,6 +164,13 @@ impl<C> Ord for IssueState<C>
 
 
 
+/// Convenience type for a vector of issue states
+///
+pub type IssueStateVec<C> = Vec<Arc<IssueState<C>>>;
+
+
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
