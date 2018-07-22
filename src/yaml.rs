@@ -147,8 +147,60 @@ fn parse_issue_state_map<R, C, F, E>(
           F: FnMut(&str) -> RResult<C, E>,
           E: Error
 {
-    // TODO: implement
-    Ok(state::IssueState::new(Default::default()))
+    let mut name = Default::default();
+    let mut conditions = Vec::default();
+    let mut relations = state::StateRelations::default();
+
+    loop {
+        // Try to extract the key of the entry
+        let (key, marker) = match parser.next()? {
+            (parser::Event::MappingEnd, _) => break, // We hit the end of the map
+            (parser::Event::Scalar(key, _, _, _), marker) => (key, marker),
+            (_, marker) => return Err(scanner::ScanError::new(marker, "Expected scalar key")),
+        };
+
+        // Identify the entry and carry out the associated action
+        match key.as_str() {
+            "name" => match parser.next()? {
+                (parser::Event::Scalar(value, _, _, _), _) => name = value,
+                (_, marker) => return Err(scanner::ScanError::new(
+                    marker,
+                    "Expected state name as scalar")
+                ),
+            },
+            "conditions" => for item in StringIter::new(parser) {
+                let (cond, marker) = item?;
+                conditions.push(cond_parse(cond.as_str()).map_err(|err| {
+                    let s = err.to_string();
+                    scanner::ScanError::new(
+                        marker,
+                        s.as_str()
+                    )
+                })?);
+            }
+            "overrides" => parse_state_relations(
+                &mut relations,
+                parser,
+                existing_states,
+                state::StateRelation::Overrides
+            )?,
+            "extends" => parse_state_relations(
+                &mut relations,
+                parser,
+                existing_states,
+                state::StateRelation::Extends
+            )?,
+            _ => return Err(scanner::ScanError::new(
+                marker,
+                "Expected either 'name', 'conditions', 'overrides' or 'extends'"
+            )),
+        }
+    }
+
+    let mut retval = state::IssueState::new(name);
+    retval.conditions = conditions;
+    retval.relations = relations;
+    Ok(retval)
 }
 
 
