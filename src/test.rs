@@ -24,6 +24,10 @@
 //
 
 use std::collections::BTreeMap;
+use std::error::Error;
+use std::fmt;
+use std::result::Result as RResult;
+use std::str::FromStr;
 
 use state;
 
@@ -45,6 +49,27 @@ impl state::Condition for TestCond {
         issue.get(self.name.as_str()).cloned().unwrap_or(false)
     }
 }
+
+impl FromStr for TestCond {
+    type Err = TestCondParseError;
+
+    fn from_str(s: &str) -> RResult<Self, Self::Err> {
+        Ok(Self {name: s.to_owned()})
+    }
+}
+
+
+#[derive(Debug)]
+pub struct TestCondParseError {
+}
+
+impl fmt::Display for TestCondParseError {
+    fn fmt(&self, _: &mut fmt::Formatter) -> RResult<(), fmt::Error> {
+        Ok(())
+    }
+}
+
+impl Error for TestCondParseError {}
 
 
 pub type TestState = state::IssueState<TestCond>;
