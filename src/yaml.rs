@@ -152,6 +152,100 @@ fn parse_issue_state_map<R, C, F, E>(
 }
 
 
+/// Iterator for iterating over the scalars in a sequence
+///
+/// This iterator allows convenient iteration over a sequence, assuming that the
+/// sequence consists only of scalars. If a non-scalar is encountered, this
+/// iterator will yield an error.
+///
+/// Alternative to a sequence of scalars, this iterator allows the convenient
+/// view on a single scalar as if it were a sequence containing only a single
+/// (scalar) item.
+///
+struct StringIter<'p, R>
+    where R: Iterator<Item = char> + 'p
+{
+    parser: &'p mut parser::Parser<R>,
+    state: SequenceParseState,
+}
+
+impl<'p, R> StringIter<'p, R>
+    where R: Iterator<Item = char> + 'p
+{
+    /// Create a new StringIter
+    ///
+    /// # Note:
+    ///
+    /// The `parser` should point at the beginning of the list, e.g. the `Event`
+    /// yielded by the parser should be either a `SequenceStart` or, in the
+    /// special case, the `Scalar` making up the list. Use this at the point
+    /// where you expect a list.
+    ///
+    fn new(parser: &'p mut parser::Parser<R>) -> Self {
+        Self {parser: parser, state: SequenceParseState::Start}
+    }
+
+    /// Given that we are within a sequence, extract the next item
+    ///
+    fn in_sequence(&mut self) -> Option<<Self as Iterator>::Item> {
+        match self.parser.next() {
+            Ok((parser::Event::Scalar(s, _, _, _), m)) => Some(Ok((s, m))),
+            Ok((parser::Event::SequenceEnd, _)) => {
+                self.state = SequenceParseState::End;
+                None
+            }
+            Ok((_, marker)) => {
+                self.state = SequenceParseState::End;
+                Some(Err(scanner::ScanError::new(marker, "Expected scalar")))
+            }
+            Err(err) => Some(Err(err)),
+        }
+    }
+}
+
+impl<'p, R> Iterator for StringIter<'p, R>
+    where R: Iterator<Item = char> + 'p
+{
+    type Item = ParseResult<(String, scanner::Marker)>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.state {
+            // The iterator is fresh. Figure out whether we have an actual
+            // sequence or a single item.
+            SequenceParseState::Start => match self.parser.next() {
+                Ok((parser::Event::SequenceStart(_), _)) => {
+                    self.state = SequenceParseState::Sequence;
+                    self.in_sequence()
+                }
+                Ok((parser::Event::Scalar(s, _, _, _), m)) => {
+                    self.state = SequenceParseState::End;
+                    Some(Ok((s, m)))
+                },
+                Ok((_, marker)) => {
+                    self.state = SequenceParseState::End;
+                    Some(Err(scanner::ScanError::new(
+                        marker,
+                        "Expected scalar or list of scalars"
+                    )))
+                },
+                Err(err) => Some(Err(err)),
+            },
+            SequenceParseState::Sequence => self.in_sequence(),
+            // We reached the end of the sequence.
+            SequenceParseState::End => None,
+        }
+    }
+}
+
+
+/// Type representing the internal state of a `StringIter`
+enum SequenceParseState {
+    Start,
+    Sequence,
+    End,
+}
+
+
 
 
 #[cfg(test)]
