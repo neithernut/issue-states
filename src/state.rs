@@ -32,6 +32,7 @@ use std::sync::Arc;
 
 /// Enumeration type for classificatoin of relations
 ///
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum StateRelation {
     Extends,
     Overrides
@@ -61,6 +62,9 @@ pub trait Condition {
 
 
 
+pub type StateRelations<C> = BTreeMap<Arc<IssueState<C>>, StateRelation>;
+
+
 /// Representaiton of an issue state
 ///
 pub struct IssueState<C>
@@ -71,7 +75,7 @@ pub struct IssueState<C>
     /// Metadata conditions of the state
     pub conditions: Vec<C>,
     /// Relations to ther states
-    pub relations: BTreeMap<Arc<IssueState<C>>, StateRelation>,
+    pub relations: StateRelations<C>,
 }
 
 
@@ -84,7 +88,7 @@ impl<C> IssueState<C>
         Self {
             name: name,
             conditions: Vec::new(),
-            relations: BTreeMap::new(),
+            relations: StateRelations::new(),
         }
     }
 
@@ -160,6 +164,13 @@ impl<C> Ord for IssueState<C>
         self.name.cmp(&other.name)
     }
 }
+
+
+
+
+/// Convenience type for a vector of issue states
+///
+pub type IssueStateVec<C> = Vec<Arc<IssueState<C>>>;
 
 
 
