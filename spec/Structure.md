@@ -34,7 +34,7 @@ other case, the item consists of a map describing the state.
    by the current state. The value of this entry is a list of strings, each
    matching an issue-state's name. Alternatively, if the state depends only on a
    single other state, a single string may be used.
- * An entry with the key `overrides` denotes states which are overridden by the
-   current state. Like for the `extends` entry, its value is a list of state
-   names or a single state name.
+ * The optional entry with the key `overrides` denotes states which are
+   overridden by the current state. Like for the `extends` entry, its value is a
+   list of state names or a single state name.
 
