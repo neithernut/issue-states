@@ -32,6 +32,7 @@ use std::str::FromStr;
 use state;
 
 
+#[derive(PartialEq, Eq, Debug)]
 pub struct TestCond {
     name: String,
 }
