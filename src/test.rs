@@ -24,28 +24,54 @@
 //
 
 use std::collections::BTreeMap;
+use std::error::Error;
+use std::fmt;
+use std::result::Result as RResult;
+use std::str::FromStr;
 
 use state;
 
 
-pub struct TestCond<'a> {
-    name: &'a str,
+#[derive(PartialEq, Eq, Debug)]
+pub struct TestCond {
+    name: String,
 }
 
-impl<'a> From<&'a str> for TestCond<'a> {
-    fn from(s: &'a str) -> Self {
-        Self {name: s}
+impl From<&'static str> for TestCond {
+    fn from(s: &str) -> Self {
+        Self {name: s.to_owned()}
     }
 }
 
-impl<'a> state::Condition for TestCond<'a> {
-    type Issue = BTreeMap<&'a str, bool>;
+impl state::Condition for TestCond {
+    type Issue = BTreeMap<&'static str, bool>;
 
     fn satisfied_by(&self, issue: &Self::Issue) -> bool {
-        issue.get(self.name).cloned().unwrap_or(false)
+        issue.get(self.name.as_str()).cloned().unwrap_or(false)
+    }
+}
+
+impl FromStr for TestCond {
+    type Err = TestCondParseError;
+
+    fn from_str(s: &str) -> RResult<Self, Self::Err> {
+        Ok(Self {name: s.to_owned()})
     }
 }
 
 
-pub type TestState<'a> = state::IssueState<TestCond<'a>>;
+#[derive(Debug)]
+pub struct TestCondParseError {
+}
+
+impl fmt::Display for TestCondParseError {
+    fn fmt(&self, _: &mut fmt::Formatter) -> RResult<(), fmt::Error> {
+        Ok(())
+    }
+}
+
+impl Error for TestCondParseError {}
+
+
+pub type TestState = state::IssueState<TestCond>;
 
