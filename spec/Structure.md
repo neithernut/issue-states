@@ -30,11 +30,11 @@ other case, the item consists of a map describing the state.
    place of a list containing only one item. The state's condition is the
    conjunction of all the sub-conditions expressed through the individual
    strings.
- * An entry with the key `depends-on` denotes other states the current state
-   depends on. The value of this entry is a list of strings, each representing
-   an issue-state's name. Alternatively, if the state depends only on a single
-   other state, a single string may be used.
+ * The optional entry with the key `extends` denotes states which are extended
+   by the current state. The value of this entry is a list of strings, each
+   matching an issue-state's name. Alternatively, if the state depends only on a
+   single other state, a single string may be used.
  * An entry with the key `overrides` denotes states which are overridden by the
-   current state. Like for the `depends-on` entry, its value is a list of state
+   current state. Like for the `extends` entry, its value is a list of state
    names or a single state name.
 
