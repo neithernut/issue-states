@@ -23,12 +23,13 @@ other case, the item consists of a map describing the state.
 
  * The mandatory entry with the key `name` denotes the issue state's name. The
    value of this entry is the name
- * An entry with the key `condition` denotes the metadata condition. The value
-   of this entry is a list of strings containing conditions for single pieces of
-   metadata in implementation defined behavior. If the condition of the state
-   if expressible using a single string, this string may be used in place of a
-   list containing only one item. The state's condition is the conjunction of
-   all the sub-conditions expressed through the individual strings.
+ * The optional entry with the key `condition` denotes the metadata condition.
+   The value of this entry is a list of strings containing conditions for single
+   pieces of metadata in an implementation defined format. If the condition of
+   the state is expressible using a single string, this string may be used in
+   place of a list containing only one item. The state's condition is the
+   conjunction of all the sub-conditions expressed through the individual
+   strings.
  * An entry with the key `depends-on` denotes other states the current state
    depends on. The value of this entry is a list of strings, each representing
    an issue-state's name. Alternatively, if the state depends only on a single
