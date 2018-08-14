@@ -361,4 +361,49 @@ mod tests {
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].name(), "foobar");
     }
+
+    #[test]
+    fn single_with_conditions() {
+        let result = parse("---
+  - name: foobar
+    conditions: [foo, bar]
+...");
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].name(), "foobar");
+        assert_eq!(result[0].conditions, vec!["foo".into(), "bar".into()]);
+    }
+
+    #[test]
+    fn multiple_with_conditions() {
+        let result = parse("---
+  - new
+  - name: acknowledged
+    conditions: acked
+    overrides: new
+  - name: assigned
+    conditions: assigned
+    extends: acknowledged
+  - name: closed
+    conditions: closed
+    overrides: [new, acknowledged, assigned]
+...");
+
+        assert_eq!(result.len(), 4);
+
+        assert_eq!(result[0].name(), "new");
+
+        assert_eq!(result[1].name(), "acknowledged");
+        assert_eq!(result[1].conditions, vec!["acked".into()]);
+        assert_eq!(result[1].relations.get(&result[0]), Some(&state::StateRelation::Overrides));
+
+        assert_eq!(result[2].name(), "assigned");
+        assert_eq!(result[2].conditions, vec!["assigned".into()]);
+        assert_eq!(result[2].relations.get(&result[1]), Some(&state::StateRelation::Extends));
+
+        assert_eq!(result[3].name(), "closed");
+        assert_eq!(result[3].conditions, vec!["closed".into()]);
+        assert_eq!(result[3].relations.get(&result[0]), Some(&state::StateRelation::Overrides));
+        assert_eq!(result[3].relations.get(&result[1]), Some(&state::StateRelation::Overrides));
+        assert_eq!(result[3].relations.get(&result[2]), Some(&state::StateRelation::Overrides));
+    }
 }
