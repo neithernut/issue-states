@@ -32,6 +32,7 @@ use std::sync::Arc;
 
 /// Enumeration type for classificatoin of relations
 ///
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum StateRelation {
     Extends,
     Overrides
