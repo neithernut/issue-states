@@ -18,12 +18,11 @@ The top-level node of an issue state specifying YAML document is a sequence.
 Each item of that sequence describes one issue state.
 
 In the most simple case, the item consists of the state's name, represented as a
-string. Such an item represents a state which is unconditionally enabled.
+string. Such an item represents a state which is unconditionally enabled. In any
+other case, the item consists of a map describing the state.
 
-In any other case, the item consists of a map with exactly one entry. The
-entry's key represents the state's name. The value is a map representing the
-state's properties. Each of those properties is optional:
-
+ * The mandatory entry with the key `name` denotes the issue state's name. The
+   value of this entry is the name
  * An entry with the key `condition` denotes the metadata condition. The value
    of this entry is a list of strings containing conditions for single pieces of
    metadata in implementation defined behavior. If the condition of the state
