@@ -152,6 +152,33 @@ fn parse_issue_state_map<R, C, F, E>(
 }
 
 
+/// Function for parsing relations from a sequence of scalars
+///
+fn parse_state_relations<R, C>(
+    relations: &mut state::StateRelations<C>,
+    parser: &mut parser::Parser<R>,
+    existing_states: &state::IssueStateVec<C>,
+    relation: state::StateRelation
+) -> ParseResult<()>
+    where R: Iterator<Item = char>,
+          C: state::Condition + Sized,
+{
+    for item in StringIter::new(parser) {
+        let (name, marker) = item?;
+        let state = existing_states
+            .iter()
+            .find(|s| *s.name() == name)
+            .map(Clone::clone)
+            .ok_or_else(|| scanner::ScanError::new(
+                marker,
+                "Unknown state"
+            ))?;
+        relations.insert(state, relation.clone());
+    }
+    Ok(())
+}
+
+
 /// Iterator for iterating over the scalars in a sequence
 ///
 /// This iterator allows convenient iteration over a sequence, assuming that the
