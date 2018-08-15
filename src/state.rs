@@ -84,6 +84,8 @@ pub trait Condition {
 
 
 
+/// Convenience of the description of a state's relation to ther states
+///
 pub type StateRelations<C> = BTreeMap<Arc<IssueState<C>>, StateRelation>;
 
 
