@@ -39,10 +39,21 @@ use std::sync::Arc;
 
 /// Enumeration type for classificatoin of relations
 ///
+/// Instances of this enum describe the relation between two states.
+///
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum StateRelation {
+    /// The issue extends another state
+    ///
+    /// All conditions are inherited. If both the extending and the extended
+    /// state are enabled for an issue, the extending state is chosen.
     Extends,
-    Overrides
+    /// The issue overrides another state
+    ///
+    /// If both the overriding and the overridden state are enabled for an
+    /// issue, the overriding state is chosen. However, no conditions are
+    /// inherited from the overridden state.
+    Overrides,
 }
 
 
