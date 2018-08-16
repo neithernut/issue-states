@@ -25,7 +25,24 @@
 
 //! # Issue states
 //!
-//! This library serves as a reference implementation for issue states.
+//! This library serves as a reference implementation for the concept of
+//! "issue states": issues in an issue tracker are assigned an `IssueState`
+//! each, based on `Condition`s associated with each state. The conditions
+//! represent predicates on issues or their metadata.
+//!
+//! Users of this library will implement the trait `Condition`, which links
+//! the user's issue-type (or, for example, a type representing an issue's
+//! metadata) to the `IssueState`s provided by this library.
+//!
+//! Given some issue-states, an `IssueStateSet` may be constructed. This type
+//! allows resolving a given issue's state, honouring relations between the
+//! states contained in the set.
+//!
+//! `IssueState`s, and an `IssueStateSet`, may be constructed by the library's
+//! user manually. However, this library also provides means for parsing an
+//! `IssueStateSet` directly from a byte-stream. Currently, only the YAML format
+//! is supported (if this library is compiled with support for `yaml-rust`
+//! enabled).
 //!
 
 #[cfg(feature = "yaml-rust")]
