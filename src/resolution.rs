@@ -174,6 +174,22 @@ impl<C> Resolvable<C> for IssueStateSet<C>
 }
 
 
+/// Create an issue state set directly from a vector
+///
+/// # Warning
+///
+/// Within the vector, the states must appear ordered by dependency: all
+/// dependencies of a state must appear before the state itself!
+///
+impl<C> From<state::IssueStateVec<C>> for IssueStateSet<C>
+    where C: state::Condition
+{
+    fn from(states: Vec<Arc<state::IssueState<C>>>) -> Self {
+        Self {data: states.into_boxed_slice()}
+    }
+}
+
+
 
 
 #[cfg(test)]

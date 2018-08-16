@@ -28,11 +28,17 @@
 //! This library serves as a reference implementation for issue states.
 //!
 
+#[cfg(feature = "yaml-rust")]
+extern crate yaml_rust;
+
 pub mod error;
 pub mod resolution;
 pub mod state;
 
 mod iter;
+
+#[cfg(feature = "yaml-rust")]
+pub mod yaml;
 
 #[cfg(test)]
 mod test;
