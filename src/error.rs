@@ -42,6 +42,8 @@ pub enum ErrorKind {
 
 
 
+/// Error type for use within the library
+///
 pub struct Error {
     kind: ErrorKind
 }
