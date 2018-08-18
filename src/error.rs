@@ -23,6 +23,10 @@
 // SOFTWARE.
 //
 
+//! Obligatory error module
+//!
+//! This module provides an `Error` and a `Result` type for this library.
+
 use std::fmt;
 use std::error::Error as EError;
 use std::result::Result as RResult;
