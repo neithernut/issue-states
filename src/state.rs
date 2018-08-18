@@ -23,6 +23,13 @@
 // SOFTWARE.
 //
 
+//! Issue states and conditions
+//!
+//! This module provides the datamodel or representation of issue states as well
+//! as the `Condition` trait which will usually be implemented by the library's
+//! user.
+//!
+
 use std::collections::BTreeMap;
 use std::cmp::Ordering;
 use std::sync::Arc;
