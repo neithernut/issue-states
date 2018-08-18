@@ -72,25 +72,8 @@ pub type ParseResult<T> = RResult<T, scanner::ScanError>;
 ///
 pub fn parse_issue_states<R, C, F, E>(
     parser: &mut parser::Parser<R>,
-    cond_parse: F
-) -> ParseResult<IssueStateSet<C>>
-    where R: Iterator<Item = char>,
-          C: state::Condition + Sized,
-          F: FnMut(&str) -> RResult<C, E>,
-          E: Error
-{
-    parse_issue_state_vec(parser, cond_parse).map(From::from)
-}
-
-
-/// Actual implementation of the parsing
-///
-/// We split the implementation in order to enable proper testing
-///
-fn parse_issue_state_vec<R, C, F, E>(
-    parser: &mut parser::Parser<R>,
     mut cond_parse: F
-) -> ParseResult<state::IssueStateVec<C>>
+) -> ParseResult<IssueStateSet<C>>
     where R: Iterator<Item = char>,
           C: state::Condition + Sized,
           F: FnMut(&str) -> RResult<C, E>,
@@ -131,7 +114,7 @@ fn parse_issue_state_vec<R, C, F, E>(
         retval.push(state);
     }
 
-    Ok(retval)
+    Ok(retval.into())
 }
 
 
