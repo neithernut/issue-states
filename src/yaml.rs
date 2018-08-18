@@ -336,30 +336,42 @@ mod tests {
 
     // Convenience function for encapsulating boilerplate for each test
     //
-    fn parse(s: &str) -> state::IssueStateVec<TestCond> {
+    fn parse(s: &str) -> IssueStateSet<TestCond> {
         let mut parser = parser::Parser::new(s.chars());
-        parse_issue_state_vec(&mut parser, FromStr::from_str)
+        parse_issue_states(&mut parser, FromStr::from_str)
             .expect("Failed to parse document")
     }
 
     #[test]
     fn empty_stream() {
         let result = parse("");
-        assert!(result.is_empty());
+        assert_eq!(result.iter().count(), 0);
     }
 
     #[test]
     fn single_state1() {
         let result = parse("  - foobar");
-        assert_eq!(result.len(), 1);
-        assert_eq!(result[0].name(), "foobar");
+        let mut iter = result.iter();
+
+        let state = iter
+            .next()
+            .expect("Parse result does not contain expected state.");
+        assert_eq!(state.name(), "foobar");
+
+        assert!(iter.next().is_none());
     }
 
     #[test]
     fn single_state2() {
         let result = parse("---\n  - foobar\n...");
-        assert_eq!(result.len(), 1);
-        assert_eq!(result[0].name(), "foobar");
+        let mut iter = result.iter();
+
+        let state = iter
+            .next()
+            .expect("Parse result does not contain expected state.");
+        assert_eq!(state.name(), "foobar");
+
+        assert!(iter.next().is_none());
     }
 
     #[test]
@@ -368,9 +380,15 @@ mod tests {
   - name: foobar
     conditions: [foo, bar]
 ...");
-        assert_eq!(result.len(), 1);
-        assert_eq!(result[0].name(), "foobar");
-        assert_eq!(result[0].conditions, vec!["foo".into(), "bar".into()]);
+        let mut iter = result.iter();
+
+        let state = iter
+            .next()
+            .expect("Parse result does not contain expected state.");
+        assert_eq!(state.name(), "foobar");
+        assert_eq!(state.conditions, vec!["foo".into(), "bar".into()]);
+
+        assert!(iter.next().is_none());
     }
 
     #[test]
@@ -388,22 +406,36 @@ mod tests {
     overrides: [new, acknowledged, assigned]
 ...");
 
-        assert_eq!(result.len(), 4);
+        let mut iter = result.iter();
 
-        assert_eq!(result[0].name(), "new");
+        let state1 = iter
+            .next()
+            .expect("Parse result does not contain expected state.");
+        assert_eq!(state1.name(), "new");
 
-        assert_eq!(result[1].name(), "acknowledged");
-        assert_eq!(result[1].conditions, vec!["acked".into()]);
-        assert_eq!(result[1].relations.get(&result[0]), Some(&state::StateRelation::Overrides));
+        let state2 = iter
+            .next()
+            .expect("Parse result does not contain expected state.");
+        assert_eq!(state2.name(), "acknowledged");
+        assert_eq!(state2.conditions, vec!["acked".into()]);
+        assert_eq!(state2.relations.get(state1), Some(&state::StateRelation::Overrides));
 
-        assert_eq!(result[2].name(), "assigned");
-        assert_eq!(result[2].conditions, vec!["assigned".into()]);
-        assert_eq!(result[2].relations.get(&result[1]), Some(&state::StateRelation::Extends));
+        let state3 = iter
+            .next()
+            .expect("Parse result does not contain expected state.");
+        assert_eq!(state3.name(), "assigned");
+        assert_eq!(state3.conditions, vec!["assigned".into()]);
+        assert_eq!(state3.relations.get(state2), Some(&state::StateRelation::Extends));
 
-        assert_eq!(result[3].name(), "closed");
-        assert_eq!(result[3].conditions, vec!["closed".into()]);
-        assert_eq!(result[3].relations.get(&result[0]), Some(&state::StateRelation::Overrides));
-        assert_eq!(result[3].relations.get(&result[1]), Some(&state::StateRelation::Overrides));
-        assert_eq!(result[3].relations.get(&result[2]), Some(&state::StateRelation::Overrides));
+        let state4 = iter
+            .next()
+            .expect("Parse result does not contain expected state.");
+        assert_eq!(state4.name(), "closed");
+        assert_eq!(state4.conditions, vec!["closed".into()]);
+        assert_eq!(state4.relations.get(state1), Some(&state::StateRelation::Overrides));
+        assert_eq!(state4.relations.get(state2), Some(&state::StateRelation::Overrides));
+        assert_eq!(state4.relations.get(state3), Some(&state::StateRelation::Overrides));
+
+        assert!(iter.next().is_none());
     }
 }
