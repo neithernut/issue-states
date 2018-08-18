@@ -23,6 +23,12 @@
 // SOFTWARE.
 //
 
+//! State resolution facilities
+//!
+//! This module provides the `Resolvable` trait for resolution of a given
+//! issue's state as well as types implementing it for issue state containers.
+//!
+
 use std::sync::Arc;
 use std::collections;
 
