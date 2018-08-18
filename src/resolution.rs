@@ -29,8 +29,9 @@
 //! issue's state as well as types implementing it for issue state containers.
 //!
 
-use std::sync::Arc;
 use std::collections;
+use std::slice;
+use std::sync::Arc;
 
 use error::*;
 use iter::LeftJoinable;
@@ -163,6 +164,14 @@ impl<C> IssueStateSet<C>
         }
 
         Ok(Self {data: data.into_boxed_slice()})
+    }
+
+    /// Get an iterator for iterating over the issue states within the set
+    ///
+    /// This iterator will yield an issue state only after all its dependencies.
+    ///
+    pub fn iter(&self) -> slice::Iter<Arc<state::IssueState<C>>> {
+        self.data.iter()
     }
 }
 
