@@ -90,5 +90,7 @@ impl EError for Error {
 
 
 
+/// Convenience Result type for use within the library
+///
 pub type Result<T> = RResult<T, Error>;
 
