@@ -217,6 +217,16 @@ impl<C> From<state::IssueStateVec<C>> for IssueStateSet<C>
 }
 
 
+// Because #[derive(Default)] doesn't work for some reason
+impl<C> Default for IssueStateSet<C>
+    where C: state::Condition
+{
+    fn default() -> Self {
+        Self {data: Default::default()}
+    }
+}
+
+
 
 
 #[cfg(test)]
