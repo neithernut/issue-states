@@ -28,7 +28,7 @@ Workflows are, essentially, specialized state machines and libraries exist for
 implementing workflow behavior. However, those are often targeted at a specific
 environment (e.g. a specific CMS) and generally do not provide any specification
 format for state machines. Rather, workflows are constructed (more or less)
-programaticaly through source code. Persisting, if supported at all, usually
+programatically through source code. Persisting, if supported at all, usually
 only targets databases --using custom database schemas.
 
 We primarily require a specification format for issue-related workflows. As no
