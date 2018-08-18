@@ -34,8 +34,16 @@ use std::result::Result as RResult;
 
 
 
+/// Kinds of errors
+///
 pub enum ErrorKind {
+    /// A cyclic dependency was dected among a set of states
+    ///
+    /// Cyclic dependencies among issue states are forbidden.
+    ///
     CyclicDependency,
+    /// An issue's dependency could not be resolved
+    ///
     DependencyError,
 }
 
