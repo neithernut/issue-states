@@ -50,6 +50,10 @@ pub enum StateRelation {
 
 /// Trait for issue metadata conditions
 ///
+/// A `Condition` represents a predicate for an issue state: a function mapping
+/// an issue to a boolean value indicating whether the condition is fulfilled or
+/// not.
+///
 /// Whatever is used as type for conditions on metadata has to implement this
 /// trait. It enables `IssueStates` to evaluate the condition.
 ///
