@@ -74,6 +74,12 @@ pub type StateRelations<C> = BTreeMap<Arc<IssueState<C>>, StateRelation>;
 
 /// Representaiton of an issue state
 ///
+/// An issue state is a named transient property depending on an issue's
+/// metadata. For a given issue, a state is either enabled or disabled based on
+/// the `Conditions` attached to state. Additionally, a state may or may not be
+/// related to other issues. Those relations affect whether a state is selected
+/// by a resolver for a given issue, provided that it is enabled for saif issue.
+///
 pub struct IssueState<C>
     where C: Condition + Sized
 {
