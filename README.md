@@ -1,6 +1,21 @@
 issue-states -- manage the states of issues
 
-**We are in the process of defining the scope and config format. No code yet.**
+This repository houses the specification of "issue states" as well as a
+reference implementation of a library providing an associates data model and
+resolution logic.
+
+An issue state is a named transient property depending on an issue's metadata.
+E.g., rather than a property which is actively controlled by an issue tracker's
+admin or user, it is a property which is determined from the issue's metadata.
+
+An issue's state is selected out of a set of issue states, which may either be
+hard-coded in an application (discouraged) or specified by some configuration.
+For a given issue, each of those states is either enabled or disabled based on a
+"condition" attached to the state. Additionally, a state may or may not be
+related to other issues within the set.
+
+For a given issue, a resolver may select at most one of the states enabled for
+the issue.
 
 # Motivation
 
@@ -13,7 +28,7 @@ Workflows are, essentially, specialized state machines and libraries exist for
 implementing workflow behavior. However, those are often targeted at a specific
 environment (e.g. a specific CMS) and generally do not provide any specification
 format for state machines. Rather, workflows are constructed (more or less)
-programaticaly through source code. Persisting, if supported at all, usually
+programatically through source code. Persisting, if supported at all, usually
 only targets databases --using custom database schemas.
 
 We primarily require a specification format for issue-related workflows. As no
