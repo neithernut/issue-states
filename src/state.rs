@@ -23,6 +23,13 @@
 // SOFTWARE.
 //
 
+//! Issue states and conditions
+//!
+//! This module provides the datamodel or representation of issue states as well
+//! as the `Condition` trait which will usually be implemented by the library's
+//! user.
+//!
+
 use std::collections::BTreeMap;
 use std::cmp::Ordering;
 use std::sync::Arc;
@@ -32,16 +39,31 @@ use std::sync::Arc;
 
 /// Enumeration type for classificatoin of relations
 ///
+/// Instances of this enum describe the relation between two states.
+///
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum StateRelation {
+    /// The issue extends another state
+    ///
+    /// All conditions are inherited. If both the extending and the extended
+    /// state are enabled for an issue, the extending state is chosen.
     Extends,
-    Overrides
+    /// The issue overrides another state
+    ///
+    /// If both the overriding and the overridden state are enabled for an
+    /// issue, the overriding state is chosen. However, no conditions are
+    /// inherited from the overridden state.
+    Overrides,
 }
 
 
 
 
 /// Trait for issue metadata conditions
+///
+/// A `Condition` represents a predicate for an issue state: a function mapping
+/// an issue to a boolean value indicating whether the condition is fulfilled or
+/// not.
 ///
 /// Whatever is used as type for conditions on metadata has to implement this
 /// trait. It enables `IssueStates` to evaluate the condition.
@@ -62,10 +84,18 @@ pub trait Condition {
 
 
 
+/// Convenience of the description of a state's relation to ther states
+///
 pub type StateRelations<C> = BTreeMap<Arc<IssueState<C>>, StateRelation>;
 
 
 /// Representaiton of an issue state
+///
+/// An issue state is a named transient property depending on an issue's
+/// metadata. For a given issue, a state is either enabled or disabled based on
+/// the `Conditions` attached to state. Additionally, a state may or may not be
+/// related to other issues. Those relations affect whether a state is selected
+/// by a resolver for a given issue, provided that it is enabled for saif issue.
 ///
 pub struct IssueState<C>
     where C: Condition + Sized

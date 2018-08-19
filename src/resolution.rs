@@ -23,6 +23,12 @@
 // SOFTWARE.
 //
 
+//! State resolution facilities
+//!
+//! This module provides the `Resolvable` trait for resolution of a given
+//! issue's state as well as types implementing it for issue state containers.
+//!
+
 use std::sync::Arc;
 use std::collections;
 
@@ -68,12 +74,24 @@ fn deps_enabled<C>(state: &state::IssueState<C>, map: &EnabledMap<C>) -> Result<
 }
 
 
-/// Trait providing operation for resolving issue states
+/// Trait providing operation for resolving issues' states
+///
+/// Implementations of trait provide the reesolution of an issue's state. It is
+/// generally assumed that the implementation encapsulates the states considered
+/// for the resolution. For example, this may be implemented for containers of
+/// issue states.
 ///
 pub trait Resolvable<C>
     where C: state::Condition
 {
-    /// Resolve states for a given issue
+    /// Resolve the state for a given issue
+    ///
+    /// Given an issue, this function will yield the state selected for it out
+    /// of the issue states encapsulated in `self` --if any of the states is
+    /// enabled for the issue.
+    ///
+    /// If no state is enabled for the given issue, this function will yield
+    /// `None`.
     ///
     fn issue_state(&self, issue: &C::Issue) -> Result<Option<Arc<state::IssueState<C>>>>;
 }

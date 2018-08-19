@@ -23,6 +23,10 @@
 // SOFTWARE.
 //
 
+//! Obligatory error module
+//!
+//! This module provides an `Error` and a `Result` type for this library.
+
 use std::fmt;
 use std::error::Error as EError;
 use std::result::Result as RResult;
@@ -30,14 +34,24 @@ use std::result::Result as RResult;
 
 
 
+/// Kinds of errors
+///
 pub enum ErrorKind {
+    /// A cyclic dependency was dected among a set of states
+    ///
+    /// Cyclic dependencies among issue states are forbidden.
+    ///
     CyclicDependency,
+    /// An issue's dependency could not be resolved
+    ///
     DependencyError,
 }
 
 
 
 
+/// Error type for use within the library
+///
 pub struct Error {
     kind: ErrorKind
 }
@@ -76,5 +90,7 @@ impl EError for Error {
 
 
 
+/// Convenience Result type for use within the library
+///
 pub type Result<T> = RResult<T, Error>;
 
