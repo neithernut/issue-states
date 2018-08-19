@@ -29,8 +29,9 @@
 //! issue's state as well as types implementing it for issue state containers.
 //!
 
-use std::sync::Arc;
 use std::collections;
+use std::slice;
+use std::sync::Arc;
 
 use error::*;
 use iter::LeftJoinable;
@@ -164,6 +165,14 @@ impl<C> IssueStateSet<C>
 
         Ok(Self {data: data.into_boxed_slice()})
     }
+
+    /// Get an iterator for iterating over the issue states within the set
+    ///
+    /// This iterator will yield an issue state only after all its dependencies.
+    ///
+    pub fn iter(&self) -> slice::Iter<Arc<state::IssueState<C>>> {
+        self.data.iter()
+    }
 }
 
 
@@ -204,6 +213,16 @@ impl<C> From<state::IssueStateVec<C>> for IssueStateSet<C>
 {
     fn from(states: Vec<Arc<state::IssueState<C>>>) -> Self {
         Self {data: states.into_boxed_slice()}
+    }
+}
+
+
+// Because #[derive(Default)] doesn't work for some reason
+impl<C> Default for IssueStateSet<C>
+    where C: state::Condition
+{
+    fn default() -> Self {
+        Self {data: Default::default()}
     }
 }
 
