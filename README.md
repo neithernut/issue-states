@@ -17,6 +17,28 @@ related to other issues within the set.
 For a given issue, a resolver may select at most one of the states enabled for
 the issue.
 
+
+# Example
+
+The example below illustrates a possible set of issue states. In this specific
+example, ech state overrides the previous one. However, more complex
+constallations are possible. The states "acknowledged", "assigned" and
+"resolved" each depend on some piece of metadata being present (or set) for an
+issue. For example, an issue with an assignee is in the state "assigned" unless
+it is resolved.
+
+    - new
+    - name: acknowledged
+      conditions: acknowledged
+      overrides: new
+    - name: assigned
+      conditions: assignee
+      overrides: acknowledged
+    - name: resolved
+      conditions: resolution
+      overrides: assigned
+
+
 # Motivation
 
 In issue- and bugtrackers, issues are usually assigned a status of some sort,
