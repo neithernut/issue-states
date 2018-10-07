@@ -29,6 +29,11 @@
 //! by the library's user.
 //!
 
+use std::error::Error as EError;
+use std::result::Result as RResult;
+
+use error::*;
+
 
 
 
@@ -84,5 +89,39 @@ pub enum MatchOp {
     /// Match if the left-hand value contains or is equal to the right-hand
     /// value.
     Contains,
+}
+
+
+
+
+/// Factory trait for conditions
+///
+/// This trait allows issue states parsers to create conditions from a string
+/// representation. Implementers need not implement the actual parsing. Instead,
+/// the function `make_condition()` will be supplied with the components of a
+/// condition.
+///
+pub trait ConditionFactory<C>
+    where C: Condition + Sized
+{
+    type Error : From<Error> + EError;
+
+    /// Create a condition from bits and pieces
+    ///
+    /// The condition will be assembled from the "metadata identifier" (e.g. the
+    /// name of the piece of metadata), a flag indicating whether the condition
+    /// is negated or not and, optionally, the matching operator and a string
+    /// representation of the right-hand side value.
+    ///
+    /// If the operator and value are not present, the resulting condition is
+    /// expected to yield true if the piece of metadata denoted by the metadata
+    /// identifier is present, e.g. non-null.
+    ///
+    fn make_condition(
+        &self,
+        name: &str,
+        neg: bool,
+        val_op: Option<(MatchOp, &str)>
+    ) -> RResult<C, Self::Error>;
 }
 
