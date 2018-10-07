@@ -45,6 +45,7 @@ pub enum ErrorKind {
     /// An issue's dependency could not be resolved
     ///
     DependencyError,
+    ConditionParseError,
 }
 
 
@@ -69,6 +70,7 @@ impl fmt::Display for Error {
         match self.kind {
             ErrorKind::CyclicDependency => f.write_str("dependency cycle detected"),
             ErrorKind::DependencyError => f.write_str("dependency resolution error"),
+            ErrorKind::ConditionParseError =>  f.write_str("could not parse condition"),
         }
     }
 }
