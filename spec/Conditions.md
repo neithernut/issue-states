@@ -57,6 +57,16 @@ relations of a partially ordered set. E.g. if these operators are provided for
 a given "type" of metadata values, the values of that type represent a partially
 ordered set.
 
+If a relation is not defined for a given type, an implementation may either
+generate an error or substitute an empty relation, e.g. the operator never
+matches. However:
+
+ * If equality (`=`) is defined, "contains" (`~`) must also be defined.
+ * If "lower than" (`<`) is defined, so must be "greater than" (`>`) and
+   vise-versa.
+ * Provided that equality `=` is defined, then if `<` and `>` is defined, `<=`
+   and `>=` must also be defined and vise-versa.
+
 As described above, each of the operators above can be negated by prepending a
 negator (`!`).
 
