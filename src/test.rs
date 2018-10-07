@@ -62,6 +62,23 @@ impl FromStr for TestCond {
 }
 
 
+#[derive(Default)]
+pub struct TestCondFactory {}
+
+impl condition::ConditionFactory<TestCond> for TestCondFactory {
+    type Error = TestCondParseError;
+
+    fn make_condition(
+        &self,
+        name: &str,
+        neg: bool,
+        val_op: Option<(condition::MatchOp, &str)>
+    ) -> RResult<TestCond, TestCondParseError> {
+        Ok(TestCond { name: name.to_owned() })
+    }
+}
+
+
 #[derive(Debug, Default)]
 pub struct TestCondParseError {
     inner: Option<error::Error>,
