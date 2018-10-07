@@ -33,6 +33,7 @@ use std::collections;
 use std::slice;
 use std::sync::Arc;
 
+use condition::Condition;
 use error::*;
 use iter::LeftJoinable;
 use state;
@@ -55,7 +56,7 @@ type EnabledMap<C> = collections::BTreeMap<Arc<state::IssueState<C>>, bool>;
 /// issue's state.
 ///
 fn deps_enabled<C>(state: &state::IssueState<C>, map: &EnabledMap<C>) -> Result<bool>
-    where C: state::Condition
+    where C: Condition
 {
     state
         .relations
@@ -83,7 +84,7 @@ fn deps_enabled<C>(state: &state::IssueState<C>, map: &EnabledMap<C>) -> Result<
 /// issue states.
 ///
 pub trait Resolvable<C>
-    where C: state::Condition
+    where C: Condition
 {
     /// Resolve the state for a given issue
     ///
@@ -106,7 +107,7 @@ pub trait Resolvable<C>
 /// issue's state.
 ///
 pub struct IssueStateSet<C>
-    where C: state::Condition
+    where C: Condition
 {
     /// Container of states
     ///
@@ -120,7 +121,7 @@ pub struct IssueStateSet<C>
 
 
 impl<C> IssueStateSet<C>
-    where C: state::Condition
+    where C: Condition
 {
     /// Create an issue state set from a orderd set of issue states
     ///
@@ -177,7 +178,7 @@ impl<C> IssueStateSet<C>
 
 
 impl<C> Resolvable<C> for IssueStateSet<C>
-    where C: state::Condition
+    where C: Condition
 {
     fn issue_state(&self, issue: &C::Issue) -> Result<Option<Arc<state::IssueState<C>>>> {
         let mut retval = None;
@@ -209,7 +210,7 @@ impl<C> Resolvable<C> for IssueStateSet<C>
 /// dependencies of a state must appear before the state itself!
 ///
 impl<C> From<state::IssueStateVec<C>> for IssueStateSet<C>
-    where C: state::Condition
+    where C: Condition
 {
     fn from(states: Vec<Arc<state::IssueState<C>>>) -> Self {
         Self {data: states.into_boxed_slice()}
@@ -219,7 +220,7 @@ impl<C> From<state::IssueStateVec<C>> for IssueStateSet<C>
 
 // Because #[derive(Default)] doesn't work for some reason
 impl<C> Default for IssueStateSet<C>
-    where C: state::Condition
+    where C: Condition
 {
     fn default() -> Self {
         Self {data: Default::default()}

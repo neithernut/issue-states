@@ -23,56 +23,34 @@
 // SOFTWARE.
 //
 
-use std::collections::BTreeMap;
-use std::error::Error;
-use std::fmt;
-use std::result::Result as RResult;
-use std::str::FromStr;
-
-use condition;
-use state;
+//! Issue states and conditions
+//!
+//! This module provides the `Condition` trait which will usually be implemented
+//! by the library's user.
+//!
 
 
-#[derive(PartialEq, Eq, Debug)]
-pub struct TestCond {
-    name: String,
+
+
+/// Trait for issue metadata conditions
+///
+/// A `Condition` represents a predicate for an issue state: a function mapping
+/// an issue to a boolean value indicating whether the condition is fulfilled or
+/// not.
+///
+/// Whatever is used as type for conditions on metadata has to implement this
+/// trait. It enables `IssueStates` to evaluate the condition.
+///
+pub trait Condition {
+    /// Type of the issue being evaluated
+    ///
+    /// Alternatively, some representation of the metadata may be used in place
+    /// of the issue type.
+    ///
+    type Issue;
+
+    /// Check whether the condition is satisfied by the issue provided
+    ///
+    fn satisfied_by(&self, issue: &Self::Issue) -> bool;
 }
-
-impl From<&'static str> for TestCond {
-    fn from(s: &str) -> Self {
-        Self {name: s.to_owned()}
-    }
-}
-
-impl condition::Condition for TestCond {
-    type Issue = BTreeMap<&'static str, bool>;
-
-    fn satisfied_by(&self, issue: &Self::Issue) -> bool {
-        issue.get(self.name.as_str()).cloned().unwrap_or(false)
-    }
-}
-
-impl FromStr for TestCond {
-    type Err = TestCondParseError;
-
-    fn from_str(s: &str) -> RResult<Self, Self::Err> {
-        Ok(Self {name: s.to_owned()})
-    }
-}
-
-
-#[derive(Debug)]
-pub struct TestCondParseError {
-}
-
-impl fmt::Display for TestCondParseError {
-    fn fmt(&self, _: &mut fmt::Formatter) -> RResult<(), fmt::Error> {
-        Ok(())
-    }
-}
-
-impl Error for TestCondParseError {}
-
-
-pub type TestState = state::IssueState<TestCond>;
 

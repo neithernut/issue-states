@@ -43,8 +43,9 @@ use std::result::Result as RResult;
 use std::sync::Arc;
 use yaml_rust::{parser, scanner};
 
-use state;
+use condition;
 use resolution::IssueStateSet;
+use state;
 
 
 
@@ -75,7 +76,7 @@ pub fn parse_issue_states<R, C, F, E>(
     mut cond_parse: F
 ) -> ParseResult<IssueStateSet<C>>
     where R: Iterator<Item = char>,
-          C: state::Condition + Sized,
+          C: condition::Condition + Sized,
           F: FnMut(&str) -> RResult<C, E>,
           E: Error
 {
@@ -126,7 +127,7 @@ fn parse_issue_state_map<R, C, F, E>(
     cond_parse: &mut F
 ) -> ParseResult<state::IssueState<C>>
     where R: Iterator<Item = char>,
-          C: state::Condition + Sized,
+          C: condition::Condition + Sized,
           F: FnMut(&str) -> RResult<C, E>,
           E: Error
 {
@@ -196,7 +197,7 @@ fn parse_state_relations<R, C>(
     relation: state::StateRelation
 ) -> ParseResult<()>
     where R: Iterator<Item = char>,
-          C: state::Condition + Sized,
+          C: condition::Condition + Sized,
 {
     for item in StringIter::new(parser) {
         let (name, marker) = item?;

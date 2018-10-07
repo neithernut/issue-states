@@ -25,14 +25,14 @@
 
 //! Issue states and conditions
 //!
-//! This module provides the datamodel or representation of issue states as well
-//! as the `Condition` trait which will usually be implemented by the library's
-//! user.
+//! This module provides the datamodel or representation of issue states.
 //!
 
 use std::collections::BTreeMap;
 use std::cmp::Ordering;
 use std::sync::Arc;
+
+use condition::Condition;
 
 
 
@@ -54,31 +54,6 @@ pub enum StateRelation {
     /// issue, the overriding state is chosen. However, no conditions are
     /// inherited from the overridden state.
     Overrides,
-}
-
-
-
-
-/// Trait for issue metadata conditions
-///
-/// A `Condition` represents a predicate for an issue state: a function mapping
-/// an issue to a boolean value indicating whether the condition is fulfilled or
-/// not.
-///
-/// Whatever is used as type for conditions on metadata has to implement this
-/// trait. It enables `IssueStates` to evaluate the condition.
-///
-pub trait Condition {
-    /// Type of the issue being evaluated
-    ///
-    /// Alternatively, some representation of the metadata may be used in place
-    /// of the issue type.
-    ///
-    type Issue;
-
-    /// Check whether the condition is satisfied by the issue provided
-    ///
-    fn satisfied_by(&self, issue: &Self::Issue) -> bool;
 }
 
 
