@@ -52,6 +52,11 @@ in the condition as a literal. The following operators are defined:
    "contains" the right-hand side. `~` and `=` may be equivalent for a given
    metadata type.
 
+Note that the operators `=`, `<`, `>`, `<=` and `>=` represent common ordering
+relations of a partially ordered set. E.g. if these operators are provided for
+a given "type" of metadata values, the values of that type represent a partially
+ordered set.
+
 As described above, each of the operators above can be negated by prepending a
 negator (`!`).
 
