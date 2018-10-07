@@ -57,3 +57,32 @@ pub trait Condition {
     fn satisfied_by(&self, issue: &Self::Issue) -> bool;
 }
 
+
+
+
+/// Match operators
+///
+/// These operators define how the piece of metadata queried from the issue is
+/// compared to the literal provided with the conditon atom. The former is
+/// considered the "left-hand value" while the latter is considered the
+/// "right-hand value" in this context.
+///
+#[derive(Debug, PartialEq, Eq)]
+pub enum MatchOp {
+    /// Match if the values are evivalent
+    Equivalence,
+    /// Match if the left-hand value is lower than the right-hand value.
+    LowerThan,
+    /// Match if the left-hand value is greater than the right-hand value.
+    GreaterThan,
+    /// Match if the left-hand value is lower than the right-hand value or
+    /// equal.
+    LowerThanOrEqual,
+    /// Match if the left-hand value is greater than the right-hand value or
+    /// equal.
+    GreaterThanOrEqual,
+    /// Match if the left-hand value contains or is equal to the right-hand
+    /// value.
+    Contains,
+}
+
