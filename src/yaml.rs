@@ -38,7 +38,6 @@
 //!   apprearing _prior_ to the current issue state in the toplevel sequence.
 //!
 
-use std::error::Error;
 use std::result::Result as RResult;
 use std::sync::Arc;
 use yaml_rust::{parser, scanner};
@@ -71,14 +70,13 @@ pub type ParseResult<T> = RResult<T, scanner::ScanError>;
 /// Consuming more events until the end of the document or stream and generating
 /// errors if any unexpected events are occured is the caller's responsibility.
 ///
-pub fn parse_issue_states<R, C, F, E>(
+pub fn parse_issue_states<R, C, F>(
     parser: &mut parser::Parser<R>,
-    mut cond_parse: F
+    cond_factory: F
 ) -> ParseResult<IssueStateSet<C>>
     where R: Iterator<Item = char>,
           C: condition::Condition + Sized,
-          F: FnMut(&str) -> RResult<C, E>,
-          E: Error
+          F: condition::ConditionFactory<C>,
 {
     // Skip the beginning of the document
     while match parser.peek()? {
@@ -105,7 +103,7 @@ pub fn parse_issue_states<R, C, F, E>(
         let state = Arc::new(match parser.next()? {
             (parser::Event::SequenceEnd, _) => break, // We hit the end of the sequence
             (parser::Event::Scalar(name, _, _, _), _) => state::IssueState::new(name),
-            (parser::Event::MappingStart(_), _) => parse_issue_state_map(parser, &retval, &mut cond_parse)?,
+            (parser::Event::MappingStart(_), _) => parse_issue_state_map(parser, &retval, &cond_factory)?,
             (_, marker) => return Err(scanner::ScanError::new(
                 marker,
                 "Expected issue state as either map or scalar"
@@ -121,15 +119,14 @@ pub fn parse_issue_states<R, C, F, E>(
 
 /// Function for parsing an issue state represented as a map
 ///
-fn parse_issue_state_map<R, C, F, E>(
+fn parse_issue_state_map<R, C, F>(
     parser: &mut parser::Parser<R>,
     existing_states: &state::IssueStateVec<C>,
-    cond_parse: &mut F
+    cond_factory: &F
 ) -> ParseResult<state::IssueState<C>>
     where R: Iterator<Item = char>,
           C: condition::Condition + Sized,
-          F: FnMut(&str) -> RResult<C, E>,
-          E: Error
+          F: condition::ConditionFactory<C>,
 {
     let mut name = Default::default();
     let mut conditions = Vec::default();
@@ -154,7 +151,7 @@ fn parse_issue_state_map<R, C, F, E>(
             },
             "conditions" => for item in StringIter::new(parser) {
                 let (cond, marker) = item?;
-                conditions.push(cond_parse(cond.as_str()).map_err(|err| {
+                conditions.push(cond_factory.parse_condition(cond.as_str()).map_err(|err| {
                     let s = err.to_string();
                     scanner::ScanError::new(
                         marker,
@@ -314,15 +311,13 @@ enum SequenceParseState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test::TestCond;
-
-    use std::str::FromStr;
+    use test::{TestCond, TestCondFactory};
 
     // Convenience function for encapsulating boilerplate for each test
     //
     fn parse(s: &str) -> IssueStateSet<TestCond> {
         let mut parser = parser::Parser::new(s.chars());
-        parse_issue_states(&mut parser, FromStr::from_str)
+        parse_issue_states(&mut parser, TestCondFactory::default())
             .expect("Failed to parse document")
     }
 
