@@ -2,8 +2,9 @@
 
 An issue state specification consist of a list or sequence of descriptions of
 issue state. Each issue state is identified by a unique, mandatory name.
-It may contain a specification for the metadata conditions as well as references
-to other issue states extended and overridden by the state.
+It may contain a specification for the metadata conditions as specified in the
+section [Conditions](Conditions.md). It may also contain references to other
+issue states extended and overridden by the state.
 
 
 ## YAML 1.2
