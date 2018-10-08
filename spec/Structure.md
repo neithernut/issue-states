@@ -25,12 +25,11 @@ other case, the item consists of a map describing the state.
  * The mandatory entry with the key `name` denotes the issue state's name. The
    value of this entry is the name
  * The optional entry with the key `condition` denotes the metadata condition.
-   The value of this entry is a list of strings containing conditions for single
-   pieces of metadata in an implementation defined format. If the condition of
-   the state is expressible using a single string, this string may be used in
-   place of a list containing only one item. The state's condition is the
-   conjunction of all the sub-conditions expressed through the individual
-   strings.
+   The value of this entry is a list of condition atoms in the form of strings.
+   If the condition of the state consists of only a single atom, a plain string
+   representing the atom may be used in place of a list containing only one
+   item. The state's condition is the conjunction of all the sub-conditions
+   expressed through the individual atoms.
  * The optional entry with the key `extends` denotes states which are extended
    by the current state. The value of this entry is a list of strings, each
    matching an issue-state's name. Alternatively, if the state depends only on a
