@@ -1,4 +1,4 @@
-# Semantics
+# Issue states
 
 The central objects of interest are the states an issue may have, henceforth
 referred to as "issue states". However, in this project, issue states are not

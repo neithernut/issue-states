@@ -2,8 +2,9 @@
 
 An issue state specification consist of a list or sequence of descriptions of
 issue state. Each issue state is identified by a unique, mandatory name.
-It may contain a specification for the metadata conditions as well as references
-to other issue states extended and overridden by the state.
+It may contain a specification for the metadata conditions as specified in the
+section [Conditions](Conditions.md). It may also contain references to other
+issue states extended and overridden by the state.
 
 
 ## YAML 1.2
@@ -24,12 +25,11 @@ other case, the item consists of a map describing the state.
  * The mandatory entry with the key `name` denotes the issue state's name. The
    value of this entry is the name
  * The optional entry with the key `condition` denotes the metadata condition.
-   The value of this entry is a list of strings containing conditions for single
-   pieces of metadata in an implementation defined format. If the condition of
-   the state is expressible using a single string, this string may be used in
-   place of a list containing only one item. The state's condition is the
-   conjunction of all the sub-conditions expressed through the individual
-   strings.
+   The value of this entry is a list of condition atoms in the form of strings.
+   If the condition of the state consists of only a single atom, a plain string
+   representing the atom may be used in place of a list containing only one
+   item. The state's condition is the conjunction of all the sub-conditions
+   expressed through the individual atoms.
  * The optional entry with the key `extends` denotes states which are extended
    by the current state. The value of this entry is a list of strings, each
    matching an issue-state's name. Alternatively, if the state depends only on a
