@@ -208,3 +208,32 @@ fn parse_op_val(string: &str) -> Result<(MatchOp, &str)> {
     Ok((op, string.split_at(pos).1))
 }
 
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parse(string: &str) -> (&str, bool, Option<(MatchOp, &str)>) {
+        parse_condition(string).expect("Failed to parse condition atom!")
+    }
+
+    #[test]
+    fn smoke() {
+        assert_eq!(parse("foo"), ("foo", false, None));
+        assert_eq!(parse("!foo"), ("foo", true, None));
+        assert_eq!(parse("foo=bar"), ("foo", false, Some((MatchOp::Equivalence, "bar"))));
+        assert_eq!(parse("foo<bar"), ("foo", false, Some((MatchOp::LowerThan, "bar"))));
+        assert_eq!(parse("foo>bar"), ("foo", false, Some((MatchOp::GreaterThan, "bar"))));
+        assert_eq!(parse("foo<=bar"), ("foo", false, Some((MatchOp::LowerThanOrEqual, "bar"))));
+        assert_eq!(parse("foo>=bar"), ("foo", false, Some((MatchOp::GreaterThanOrEqual, "bar"))));
+        assert_eq!(parse("foo!~bar"), ("foo", true, Some((MatchOp::Contains, "bar"))));
+        assert_eq!(parse("foo!=bar"), ("foo", true, Some((MatchOp::Equivalence, "bar"))));
+        assert_eq!(parse("foo!<bar"), ("foo", true, Some((MatchOp::LowerThan, "bar"))));
+        assert_eq!(parse("foo!>bar"), ("foo", true, Some((MatchOp::GreaterThan, "bar"))));
+        assert_eq!(parse("foo!<=bar"), ("foo", true, Some((MatchOp::LowerThanOrEqual, "bar"))));
+        assert_eq!(parse("foo!>=bar"), ("foo", true, Some((MatchOp::GreaterThanOrEqual, "bar"))));
+        assert_eq!(parse("foo!~bar"), ("foo", true, Some((MatchOp::Contains, "bar"))));
+    }
+}
