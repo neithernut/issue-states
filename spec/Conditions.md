@@ -34,23 +34,22 @@ values. In a condition atom, the left hand side is the value of the metadata
 denoted by the metadata identifier. The right hand side is the value contained
 in the condition as a literal. The following operators are defined:
 
- * `=` (equality): both sides of the operator are equal.
- * `<` (lower than): the left-hand side is "lower" than the right-hand side.
-   If the left-hand side is "lower than" the right-hand side, it must not be
-   equal to the right-hand side.
- * `>` (greater than): the left-hand side is "lower" than the right-hand side.
-   The relation represented by this operator must be equivalent to the `>`
-   operator if the left- and the right-hand side were swapped.
- * `<=` (lower than or equal): the left-hand side is lower than or equal to the
-   right-hand side. The relation represented by this operator must be the
+ * `=` (equality): true if both sides of the operator are equal.
+ * `<` (lower than): true if the left-hand side is "lower" than the right-hand
+   side. If the left-hand side is "lower than" the right-hand side, it must not
+   be equal to the right-hand side.
+ * `>` (greater than): true if the left-hand side is "lower" than the
+   right-hand side. The relation represented by this operator must be equivalent
+   to the `>` operator if the left- and the right-hand side were swapped.
+ * `<=` (lower than or equal): true if the left-hand side is lower than or equal
+   to the right-hand side. The relation represented by this operator must be the
    disjunction of both `<` and `=`.
- * `>=` (greater than or equal): the left-hand side is greater than or equal to
-   the right-hand side. The relation represented by this operator must be the
-   disjunction of both `>` and `=`.
- * `~` (contains): the left-hand side "contains" the right-hand side. If the
-   left-hand side and the right-hand side are equal, the left-hand side
-   "contains" the right-hand side. `~` and `=` may be equivalent for a given
-   metadata type.
+ * `>=` (greater than or equal): true if the left-hand side is greater than or
+   equal to the right-hand side. The relation represented by this operator must
+   be the disjunction of both `>` and `=`.
+ * `~` (contains): true if the left-hand side "contains" the right-hand side,
+   also if the left-hand side and the right-hand side are equal. `~` and `=` may
+   be equivalent for a given metadata type.
 
 Note that the operators `=`, `<`, `>`, `<=` and `>=` represent common ordering
 relations of a partially ordered set. E.g. if these operators are provided for
