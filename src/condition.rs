@@ -36,10 +36,13 @@
 ///
 /// A `Condition` represents a predicate for an issue state: a function mapping
 /// an issue to a boolean value indicating whether the condition is fulfilled or
-/// not.
+/// not. It is generally assumed that a condition consists of "condition atoms",
+/// which each specify a "singular" condition on a specific piece of metadata.
 ///
 /// Whatever is used as type for conditions on metadata has to implement this
-/// trait. It enables `IssueStates` to evaluate the condition.
+/// trait. It enables `IssueStates` to evaluate the condition. Additionally, the
+/// `ConditionFactory` trait should be implemented in order to enable parsing
+/// conditions from configuration files.
 ///
 pub trait Condition {
     /// Type of the issue being evaluated
