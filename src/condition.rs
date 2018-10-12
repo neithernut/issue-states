@@ -123,6 +123,20 @@ pub trait ConditionFactory<C>
         neg: bool,
         val_op: Option<(MatchOp, &str)>
     ) -> RResult<C, Self::Error>;
+
+    /// Parse a condition directly from a string
+    ///
+    /// This function parses a `Condition` directly from a string using the
+    /// `make_condition()` function.
+    ///
+    fn parse_condition(
+        &self,
+        string: &str,
+    ) -> RResult<C, Self::Error> {
+        parse_condition(string)
+            .map_err(From::from)
+            .and_then(|(name, neg, op_val)| self.make_condition(name, neg, op_val))
+    }
 }
 
 
