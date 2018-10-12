@@ -69,3 +69,13 @@ matches. However:
 As described above, each of the operators above can be negated by prepending a
 negator (`!`).
 
+
+## A note on the value
+
+Obviously, the value is directly preceded by the match operator. This imposes
+constraints on the values (or rather, the string representations) possible.
+However, since the match operator consists of at least one character, only the
+match operators consisting of multiple characters constrain possible values. All
+of those operators end with a `=`. Hence, a value cannot start with a `=`, but
+with any other character.
+
