@@ -30,6 +30,7 @@ use std::result::Result as RResult;
 use std::str::FromStr;
 
 use condition;
+use error;
 use state;
 
 
@@ -61,17 +62,27 @@ impl FromStr for TestCond {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct TestCondParseError {
+    inner: Option<error::Error>,
 }
 
 impl fmt::Display for TestCondParseError {
-    fn fmt(&self, _: &mut fmt::Formatter) -> RResult<(), fmt::Error> {
-        Ok(())
+    fn fmt(&self, f: &mut fmt::Formatter) -> RResult<(), fmt::Error> {
+        self.inner
+            .as_ref()
+            .map(|e| e.fmt(f))
+            .unwrap_or(Ok(()))
     }
 }
 
 impl Error for TestCondParseError {}
+
+impl From<error::Error> for TestCondParseError {
+    fn from(e: error::Error) -> Self {
+        Self { inner: Some(e) }
+    }
+}
 
 
 pub type TestState = state::IssueState<TestCond>;
