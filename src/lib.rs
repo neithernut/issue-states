@@ -48,6 +48,7 @@
 #[cfg(feature = "yaml-rust")]
 extern crate yaml_rust;
 
+pub mod condition;
 pub mod error;
 pub mod resolution;
 pub mod state;
@@ -63,6 +64,6 @@ mod test;
 // convenience exports
 pub use error::Result;
 pub use resolution::IssueStateSet;
-pub use state::Condition;
+pub use condition::Condition;
 pub use state::IssueState;
 
